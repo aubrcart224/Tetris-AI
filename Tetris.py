@@ -14,7 +14,7 @@ class Tetris:
 # Board 
 
 MAP_EMPTY = 0
-MAP_BLOCK = 1
+MAP_BLOCK = 1 
 MAP_PLAYER = 2
 BOARD_WIDTH = 10
 BOARD_HEIGHT = 20 
@@ -61,7 +61,7 @@ def _get_rotated_peice(self):
 def _get_complete_board(self):
     '''Return the complete board including the current peice'''
     peice = self._get_rotated_peice()
-    peice = [np.add( x, self /current_pos) for x in peice]
+    peice = [np.add( x, self.current_pos) for x in peice]
     board = [x[:] for x in self.board]
     for x,y in peice:
         board[y][x] = Tetris.MAP_PLAYER 
@@ -116,7 +116,7 @@ def _add_piece_to_board(self, piece, pos):
 
     board = [x[:] for x in self.board]
     for x,y in piece: 
-        board[y + pos[1]][x + pos[0]] = Tetris.MAP_BLOCK
+        board[y + pos[1]][x + pos[0]] = Tetris.MAP_BLOCK 
     return board
 
 
@@ -235,7 +235,50 @@ def get_state_size(self):
     return 4 
  
 
+def play(self, x, rotation, render = False, render_delay = None): 
+    '''Play a move'''
+
+    self.current_pos = [x, 0]
+    self.current_rotation = rotation 
+
+    #drop the piece 
+    while not self._check_collision(self._get_rotated_piece(), self.current_pos):
+        if render:
+            self.render()
+            if render_delay:
+                sleep(render_delay)
+        self.current_pos[1] += 1
+    self.current_pos[1] -= 1 
 
 
+    # Update the board and calc score 
+    self.board = self._add_piece_to_board(self._get_rotated_peice(), self.current_pos)
+    lines_cleared, self.board = self._clear_lines(self.board)
+    score = 1 + (lines_cleared ** 2) * Tetris.BOARD_WIDTH
+    self.score += score
+
+
+    #start new round 
+
+    self._new_round()
+    if self.game_over:
+        score -= 2 
+    
+    return score, self.game_over
+
+ 
+def render(self):
+
+        ''' render current board'''
+
+        img = [Tetris.COLORS[p] for row in self._get_complete_board() for p in row]
+        img = np.array(img).reshape(Tetris.BOARD_HEIGHT, Tetris.BOARD_WIDTH, 3).astype(np.uint8)
+        img = img[..., ::-1] # Convert RRG to BGR (used by cv2)
+        img = Image.fromarray(img, 'RGB')
+        img = img.resize((Tetris.BOARD_WIDTH * 25, Tetris.BOARD_HEIGHT * 25), Image.NEAREST)
+        img = np.array(img)
+        cv2.putText(img, str(self.score), (22, 22), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1)
+        cv2.imshow('image', np.array(img))
+        cv2.waitKey(1)
 
 
