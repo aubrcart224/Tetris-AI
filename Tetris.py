@@ -1,6 +1,6 @@
 import random  
 import cv2 
-import numpy as np 
+import numpy as np  
 from PIL import Image 
 from time import sleep
 
@@ -166,13 +166,74 @@ def _bumpiness(self, board):
     return sum_height, max_height - min_height
 
 
+def _height(self, board):
+    '''Return the height of the board'''
 
+    sum_height = 0
+    max_height = 0
+    min_height = Tetris.BOARD_HEIGHT
+
+    for col in zip(*board):
+        i = 0 
+        while i < Tetris.BOARD_HEIGHT and col[i] != Tetris.MAP_EMPTY:
+            i += 1
+        height = Tetris.BOARD_HEIGHT - i
+        sum_height += height
+        if height > max_height:
+            max_height = height
+        elif height < min_height:
+            min_height = height
     
+    return sum_height, max_height, min_height
         
+def _get_board_props(self, board):
+    '''Return the board properties'''
 
+    lines, board = self._clear_lines(board)
+    holes = self._number_of_holes(board)
+    total_bunpiness, max_bumpiness = self._bumpiness(board)
+    sum_height, max_height, min_height = self._height(board)
+    return [lines, holes, total_bunpiness, max_bumpiness, sum_height, max_height, min_height]
 
+def get_next_states(self):
+    '''Return all the possible next states'''
+    states = {}
+    piece_id = self.current_piece
 
+    if piece_id == 6: 
+        rotations = [0]
+    elif piece_id == 0: 
+        rotations = [0, 90]
+    else:
+        rotations = [0, 90, 180, 270]
+    
+    # All possible rotations 
 
+    for rotation in rotations: 
+        piece = Tetris.TETRIMINOS[piece_id][rotation]
+        min_x = min([x for x, y in piece])
+        max_x = max([x for x, y in piece])
+        
+        # For all possible positions
+        for x in range(-min_x, Tetris.BOARD_WIDTH - max_x):
+            pos = [x, 0]
+
+            #drop the piece
+            while not self._collision(piece, pos):
+                pos[1] += 1
+            pos[1] -= 1
+            
+            #valid move 
+            if pos[1] >= 0:
+                board = self._add_piece_to_board(piece, pos)
+                states[(x, rotation)] = self._get_board_props(board)
+                
+    return states
+
+def get_state_size(self): 
+    '''Size of the state''' 
+    return 4 
+ 
 
 
 
