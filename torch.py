@@ -1,13 +1,10 @@
 import torch 
 import torch.nn as nn 
-x = torch.rand(5, 3)
-print(x) 
-
 
 #this does not work yet but is a sceleton that will be filled later.
 #still need to figure out how get pytorch up and running. 
 
-
+#tetris game
 class TetrisModel(nn.Module):
     
     def __init__(self): 
@@ -24,8 +21,7 @@ class TetrisModel(nn.Module):
 
         return x
 
-
-
+#training the model
 def training (model, game, episodes, optimizer, criterion):
     for episode in range(episodes):
         state = game.reset()

@@ -4,15 +4,12 @@ import numpy as np
 from PIL import Image 
 from time import sleep
 
-
 # Tetris game class 
-
 class Tetris:
 
     '''Tetris game class'''
 
     # Board 
-
     MAP_EMPTY = 0
     MAP_BLOCK = 1 
     MAP_PLAYER = 2
@@ -234,7 +231,6 @@ class Tetris:
         '''Size of the state''' 
         return 4 
  
-
     def play(self, x, rotation, render = False, render_delay = None): 
         '''Play a move'''
 
@@ -250,27 +246,22 @@ class Tetris:
             self.current_pos[1] += 1
         self.current_pos[1] -= 1 
 
-
         # Update the board and calc score 
         self.board = self._add_piece_to_board(self._get_rotated_peice(), self.current_pos)
         lines_cleared, self.board = self._clear_lines(self.board)
         score = 1 + (lines_cleared ** 2) * Tetris.BOARD_WIDTH
         self.score += score
 
-
         #start new round 
-
         self._new_round()
         if self.game_over:
             score -= 2 
     
         return score, self.game_over
 
- 
     def render(self):
 
             ''' render current board'''
-
             img = [Tetris.COLORS[p] for row in self._get_complete_board() for p in row]
             img = np.array(img).reshape(Tetris.BOARD_HEIGHT, Tetris.BOARD_WIDTH, 3).astype(np.uint8)
             img = img[..., ::-1] # Convert RRG to BGR (used by cv2)
