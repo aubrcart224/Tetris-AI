@@ -43,7 +43,7 @@ class Tetris:
         self.game_over = False
         self.bag = list(range(len(Tetris.TETRIMINOS)))
         random.shuffle(self.bag)
-        self.next_peice = self.pop()
+        self.next_peice = self.bag.pop()
         self._new_round = 0 
         self.score = 0
 
@@ -186,7 +186,7 @@ class Tetris:
     def _get_board_props(self, board):
         '''Return the board properties'''
 
-        lines, board = self._clear_lines(board)
+        lines, board = self._clear_lines(board) # error here fix soon gn
         holes = self._number_of_holes(board)
         total_bunpiness, max_bumpiness = self._bumpiness(board)
         sum_height, max_height, min_height = self._height(board)
