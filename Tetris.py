@@ -49,11 +49,9 @@ class Tetris:
 
         return self._get_board_props(self.board)
 
-
     def _get_rotated_peice(self):
         '''Return the current peice rotated'''
-        return Tetris.TETROMINOS[self.current_piece][self.current_rotation]
-
+        return Tetris.TETRIMINOS[self.current_piece][self.current_rotation]
 
     def _get_complete_board(self):
         '''Return the complete board including the current peice'''
@@ -67,7 +65,6 @@ class Tetris:
     def _get_game_score(self):
         '''Return the current game score'''
         return self.score
-
 
     def _new_round(self):
         '''Start a new round'''
@@ -116,7 +113,6 @@ class Tetris:
             board[y + pos[1]][x + pos[0]] = Tetris.MAP_BLOCK 
         return board
 
-
     def _clear_lines(self, board):
         '''Clear completed lines from the board'''
 
@@ -129,7 +125,6 @@ class Tetris:
                 board.insert(0, [0 for _ in range(Tetris.BOARD_WIDTH)])
             self.score += len(lines)
         return board
-
 
     def _number_of_holes(self, board):
         '''Return the number of holes in the board'''
@@ -162,7 +157,6 @@ class Tetris:
         
         return sum_height, max_height - min_height
 
-
     def _height(self, board):
         '''Return the height of the board'''
 
@@ -186,7 +180,8 @@ class Tetris:
     def _get_board_props(self, board):
         '''Return the board properties'''
 
-        lines, board = self._clear_lines(board) # error here fix soon gn
+        lines = self._clear_lines(board)
+        board = self._clear_lines(board) 
         holes = self._number_of_holes(board)
         total_bunpiness, max_bumpiness = self._bumpiness(board)
         sum_height, max_height, min_height = self._height(board)
@@ -271,5 +266,4 @@ class Tetris:
             cv2.putText(img, str(self.score), (22, 22), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1)
             cv2.imshow('image', np.array(img))
             cv2.waitKey(1)
-
 
