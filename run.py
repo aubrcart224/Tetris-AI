@@ -4,10 +4,31 @@ from datetime import datetime
 from statistics import mean, median
 import random
 #from logs import pytorch_model
+
+
+
+import torch
 from torch import nn
-        
+
 #tensflow model need to move this over to a torch model but for now we ball 
 
+class DQNAgent(nn.Module):
+    def __init__(self, input_dim, n_neurons, activations):
+        super(DQNAgent, self).__init__()
+        self.layers = nn.ModuleList()
+        last_dim = input_dim
+        for n_neuron, activation in zip(n_neurons, activations[:-1]):  # Excluding the last activation
+            self.layers.append(nn.Linear(last_dim, n_neuron))
+            if activation == 'relu':
+                self.layers.append(nn.ReLU())
+            last_dim = n_neuron
+        # Output layer
+        self.layers.append(nn.Linear(last_dim, n_neurons[-1]))  # Assuming last activation is linear
+    
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
 
 # Run dqn with Tetris
 def dqn():
@@ -38,7 +59,7 @@ def dqn():
     scores = []
 
     for episode in nn(range(episodes)):
-        current_state = env.reset()
+        current_state = torch.tensor(env.reset(), dytpe=torch.float32)
         done = False
         steps = 0
 
@@ -80,6 +101,8 @@ def dqn():
             log.log(episode, avg_score=avg_score, min_score=min_score,
                     max_score=max_score)
 
+
+        
 
 if __name__ == "__main__":
     dqn()
