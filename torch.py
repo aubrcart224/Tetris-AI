@@ -52,3 +52,5 @@ def training (model, game, episodes, optimizer, criterion):
 
     #train the model
     training(model, game, 1000, optimizer, criterion)   
+
+
