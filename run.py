@@ -5,8 +5,6 @@ from statistics import mean, median
 import random
 #from logs import pytorch_model
 
-
-
 import torch
 from torch import nn
 
@@ -27,7 +25,7 @@ class DQNAgent(nn.Module):
     
     def forward(self, x):
         for layer in self.layers:
-            x = layer(x)
+            x = layer(x) 
         return x
 
 # Run dqn with Tetris
@@ -102,7 +100,6 @@ def dqn():
                     max_score=max_score)
 
 
-        
 
 if __name__ == "__main__":
     dqn()

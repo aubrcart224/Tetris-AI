@@ -13,7 +13,7 @@ class TetrisModel(nn.Module):
         self.layer2 = nn.Linear(128, 256)
         self.layer3 = nn.Linear(256, output_features) #output_features should match the number of possible actions
 
-
+    
     def forward(self, x):
         x = torch.relu(self.layer1(x))
         x = torch.relu(self.layer2(x))
@@ -37,8 +37,8 @@ def training (model, game, episodes, optimizer, criterion):
             target = reward + torch.max(model(next_state_tensor))
 
             loss = criterion(predictions, [action], target)
-            optimizer.zero_grad()
-            loss.backward()
+            optimizer.zero_grad() 
+            loss.backward() 
             optimizer.step()
 
             state = next_state

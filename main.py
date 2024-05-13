@@ -1,34 +1,32 @@
-import cv2 
+import pygame  
 from Tetris import Tetris
 
 def main():
+    pygame.init()
+    screen = pygame.display.set_mode((300, 600))  # Set the screen size for Tetris
+    clock = pygame.time.Clock()
     game = Tetris()
-    while not game.game_over:
+
+    running = True
+    while running:
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: 
+                running = False 
+            if event.type == pygame.KEYDOWN: 
+                if event.key == pygame.K_LEFT: 
+                    game.play(-1, 0)
+                elif event.key == pygame.K_RIGHT: 
+                    game.play(1, 0)
+                elif event.key == pygame.K_UP: 
+                    game.play(0, 90)
+                elif event.key == pygame.K_DOWN: 
+                    game.play(0, 0, True)
+
         game.render()
-        key = cv2.waitKey(100)  & 0xFF # 100 ms delay
+        pygame.display.flip()
+        clock.tick(120)  # Run the game at 10 frames per second
 
-        #awsd
-        if key == ord('a'):  #move left
-            game.play(-1, 0)
-        elif key == ord('d'): #move right
-            game.play(1, 0)
-        elif key == ord('w'): #rotate
-            game.play(0, 90)
-        elif key == ord('q'): #drop faster
-            game.play(0, 0, True)
-
-        #arrow keys migth not work on all systems
-        if key == 2424832:  #move left
-            game.play(-1, 0)
-        elif key == 2555904: #move right
-            game.play(1, 0)
-        elif key == 2490368: #rotate
-            game.play(0, 90)
-        elif key == 2621440: #drop faster
-            game.play(0, 0, True)
-            
-    cv2.destroyAllWindows()
-
+    pygame.quit()
 
 if __name__ == "__main__":
     main()
