@@ -1,5 +1,5 @@
 import random  
-import cv2 
+import pygame
 import numpy as np  
 from PIL import Image 
 from time import sleep
@@ -15,6 +15,11 @@ class Tetris:
     MAP_PLAYER = 2
     BOARD_WIDTH = 10
     BOARD_HEIGHT = 20 
+    COLORS = {
+        0: (0, 0, 0),
+        1: (255, 255, 255),
+        2: (255, 255, 255),
+    }
 
     #TETRIMINOS = {  
        # 1: { 'shape': [[1, 1, 1], [0, 1, 0]], 'color': (0, 0, 255) }, # T
@@ -71,9 +76,14 @@ class Tetris:
     }
 
     COLORS = {
-        0: (0, 0, 0),
-        1: (255, 255, 255),
-        2: (255, 255, 255),
+        0: (0, 0, 0),       # Empty
+        1: (255, 0, 0),      # Red
+        2: (0, 150, 0),      # Green
+        3: (0, 0, 255),      # Blue
+        4: (255, 120, 0),    # Orange
+        5: (255, 255, 0),    # Yellow
+        6: (180, 0, 255),    # Purple
+        7: (0, 220, 220)     # Cyan
     }
 
     def __init__(self):
@@ -85,11 +95,15 @@ class Tetris:
         '''Reset board and game return the current state'''
         self.board = [[0] * Tetris.BOARD_WIDTH for _ in range(Tetris.BOARD_HEIGHT)]
         self.game_over = False
+        self.score = 0
         self.bag = list(range(len(Tetris.TETRIMINOS)))
         random.shuffle(self.bag)
         self.next_peice = self.bag.pop()
         self._new_round = 0 
-        self.score = 0
+        self.current_piece = None
+        self.current_rotation = 0
+        self.current_pos = [5, 0]  # Start in the middle of the board at the top
+        self._new_round()
 
         return self._get_board_props(self.board)
 
@@ -128,26 +142,16 @@ class Tetris:
     def _collision(self, peice, pos):
         '''Return True if the peice at pos collides with the board'''
         for x, y in peice:
+             # Calculate the actual x and y coordinates on the board
             x += pos[0]
             y += pos[1]
+            # Check if the piece is outside the left, right, or bottom borders of the board
             if x < 0 or x >= Tetris.BOARD_WIDTH or y >= Tetris.BOARD_HEIGHT: 
                 return True
+             # Check if the piece is trying to occupy a space already filled with a block also check for negs. 
             if y >= 0 and self.board[y][x] == Tetris.MAP_BLOCK:
                 return True
         return False
-
-    def _rotate(self, angle): 
-        '''rotate peice'''
-        r = self.current_rotation + angle
-
-        if r == 360: 
-            r = 0
-        if r < 0:
-            r += 360
-        elif r > 360:
-            r -= 360
-    
-        self.current_rotation = r
 
     def _add_piece_to_board(self, piece, pos): 
         '''Add the current peice to the board'''
@@ -298,18 +302,77 @@ class Tetris:
     
         return score, self.game_over
 
-    def render(self):
+    def render(self, screen):
 
             ''' render current board'''
+
+            screen.fill(Tetris.COLORS[0])  # Fill the screen with black
+
+            block_size = 30 #size of single block 
+            for y in range(Tetris.BOARD_HEIGHT):
+                for x in range(Tetris.BOARD_WIDTH):
+                    block = self.board[y][x]
+                    pygame.draw.rect(screen, Tetris.COLORS[block], (x*block_size, y*block_size, block_size, block_size))
+    
+            # Display the score
+            font = pygame.font.Font(None, 36)
+            text = font.render('Score: {}'.format(self.score), True, (255, 255, 255))
+            screen.blit(text, (20, 20))
+
+            #maybe useful later 
+            '''
             img = [Tetris.COLORS[p] for row in self._get_complete_board() for p in row]
             img = np.array(img).reshape(Tetris.BOARD_HEIGHT, Tetris.BOARD_WIDTH, 3).astype(np.uint8)
             img = img[..., ::-1] # Convert RRG to BGR (used by cv2)
             img = Image.fromarray(img, 'RGB')
             img = img.resize((Tetris.BOARD_WIDTH * 25, Tetris.BOARD_HEIGHT * 25), Image.NEAREST)
             img = np.array(img)
+            '''
+
+            #for cv rendering 
+            '''
             cv2.putText(img, str(self.score), (22, 22), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1)
             cv2.imshow('image', np.array(img))
             cv2.waitKey(1)
+            '''
+
+    def move(self, direction):
+    # Implement logic to move the current piece left or right
+        
+        new_x = self.current_pos[0] +direction
+
+        temp_pos = [new_x, self.current_pos[1]]
+
+        rotated_piece = self._get_rotated_peice()
+
+        if not self._collision(rotated_piece, temp_pos):
+            self.current_pos[0] = new_x
+        
+        pass
+
+    def rotate(self, angle): 
+        '''rotate peice'''
+        r = self.current_rotation + angle
+
+        if r == 360: 
+            r = 0
+        if r < 0:
+            r += 360
+        elif r > 360:
+            r -= 360
+    
+        self.current_rotation = r
+        pass
+
+    def drop(self):
+        # Implement logic to drop the current piece faster
+            pass
+
+    def update(self):
+        # Implement logic to update the game state, such as moving the piece down automatically
+            pass
+
+
 
 
 
