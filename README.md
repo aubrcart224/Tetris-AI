@@ -5,6 +5,8 @@ This project aims to develop a fully functional Tetris game from scratch with an
 
 ## Current Status
 - [x] It exists and is being worked on.
+- [/] Basic game function working
+- [ ] AI Model working 
 - [ ] It is done. 
 
 ## Features
