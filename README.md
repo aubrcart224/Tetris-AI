@@ -18,5 +18,7 @@ This project aims to develop a fully functional Tetris game from scratch with an
 
 ## Technologies Used
 - python
-- want to use pytorch but might need to use tensor flow 
+- want to use pytorch but might need to use tensor flow
+
+gits having toruble pushing new code :( 
 
